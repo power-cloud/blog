@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Jenkins,Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="之前App在提交测试和最终部署的过程中App打包一直是由开发人员来完成的，由于项目比较大， 再加上Android打包本身就比较慢，所以每次打包还是很耗时的。并且按照严格的研发流程来讲，开发人员应该只负责提交代码，测试和部署过程中的打包都不应该由开发人员来完成，所以我就想着给测试和运维人员搭建一个可以自动打包的环境。后来在网上看到很多网友分享使用Jenkins进行Android自动打包的文章，几经尝">
+<meta name="keywords" content="Jenkins,Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Jenkins进行Android自动打包">
+<meta property="og:url" content="http://yoursite.com/2017/08/03/使用Jenkins进行Android自动打包/index.html">
+<meta property="og:site_name" content="PowerCloud">
+<meta property="og:description" content="之前App在提交测试和最终部署的过程中App打包一直是由开发人员来完成的，由于项目比较大， 再加上Android打包本身就比较慢，所以每次打包还是很耗时的。并且按照严格的研发流程来讲，开发人员应该只负责提交代码，测试和部署过程中的打包都不应该由开发人员来完成，所以我就想着给测试和运维人员搭建一个可以自动打包的环境。后来在网上看到很多网友分享使用Jenkins进行Android自动打包的文章，几经尝">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_first_load.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_install_plugin.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_select_plugin.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_main.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_android_home.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_gradle.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_config_job.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_param1.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_param2.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_param3.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_param4.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_param5.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_scm.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_build_env.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_build1.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_build2.png">
+<meta property="og:image" content="http://yoursite.com/images/jenkins_final.png">
+<meta property="og:updated_time" content="2017-08-06T06:34:09.242Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用Jenkins进行Android自动打包">
+<meta name="twitter:description" content="之前App在提交测试和最终部署的过程中App打包一直是由开发人员来完成的，由于项目比较大， 再加上Android打包本身就比较慢，所以每次打包还是很耗时的。并且按照严格的研发流程来讲，开发人员应该只负责提交代码，测试和部署过程中的打包都不应该由开发人员来完成，所以我就想着给测试和运维人员搭建一个可以自动打包的环境。后来在网上看到很多网友分享使用Jenkins进行Android自动打包的文章，几经尝">
+<meta name="twitter:image" content="http://yoursite.com/images/jenkins_first_load.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/08/03/使用Jenkins进行Android自动打包/"/>
+
+
+
+
+
+  <title>使用Jenkins进行Android自动打包 | PowerCloud</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PowerCloud</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">千里之行，始于足下</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/08/03/使用Jenkins进行Android自动打包/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="PowerCloud">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PowerCloud">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">使用Jenkins进行Android自动打包</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-03T11:27:38+00:00">
+                2017-08-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv">本文总阅读量
+            <span class="busuanzi-value" id="busuanzi_value_page_pv" ></span>次
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前App在提交测试和最终部署的过程中App打包一直是由开发人员来完成的，由于项目比较大， 再加上Android打包本身就比较慢，所以每次打包还是很耗时的。并且按照严格的研发流程来讲，开发人员应该只负责提交代码，测试和部署过程中的打包都不应该由开发人员来完成，所以我就想着给测试和运维人员搭建一个可以自动打包的环境。后来在网上看到很多网友分享使用Jenkins进行Android自动打包的文章，几经尝试终于把环境搭建起来了。</p>
+<a id="more"></a>
+<h2 id="Jenkins安装"><a href="#Jenkins安装" class="headerlink" title="Jenkins安装"></a>Jenkins安装</h2><p>Jenkins作为一个开源的持续集成工具，不仅可以用来进行Android打包，也可以用来进行iOS打包、NodeJs打包、Jave服务打包等。官方地址为:<a href="https://jenkins.io/" target="_blank" rel="external">https://jenkins.io/</a>。Jenkins是使用Java开发的，官方提供一个war包，并且自带servlet容器，可以独立运行也可以放在Tomcat中运行。我们这里使用独立运行的方式。运行命令为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">java -jar jenkins.war</div></pre></td></tr></table></figure></p>
+<p>运行成功，打开浏览器访问<code>http://locahost:8080</code>,首次运行会要求输入管理员密码，Jenkins在首次运行时生成的，会在控制台打印出来或者按照页面提示的文件路径查看管理员密码。控制台输出的密码:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">*************************************************************</div><div class="line">*************************************************************</div><div class="line">*************************************************************</div><div class="line"></div><div class="line">Jenkins initial setup is required. An admin user has been created and a password generated.</div><div class="line">Please use the following password to proceed to installation:</div><div class="line"></div><div class="line">b7004e63acb940368e62a5dacaa2b246</div><div class="line"></div><div class="line">This may also be found at: /Users/dmx/.jenkins/secrets/initialAdminPassword</div></pre></td></tr></table></figure></p>
+<p>第一次运行的页面</p>
+<p><img src="/images/jenkins_first_load.png" alt="Jenkins第一次运行"></p>
+<p>输入密码之后点击continue选择要安装的插件</p>
+<p><img src="/images/jenkins_install_plugin.png" alt="Jenkins安装插件"></p>
+<p>由于Jenkins的插件之间存在依赖关系，并且Jenkins不会帮我们自动安装依赖的插件，所以插件安装过程比较容易出错，所以我们建议自己选择要安装的插件，不选择Jenkins建议安装的插件。点击<code>Select plugins to install</code>进入下一个页面</p>
+<p><img src="/images/jenkins_select_plugin.png" alt="Jenkins选择插件"></p>
+<p>首先把默认选中的插件都取消掉，然后选择我们要安装的插件，对于Android打包来讲一般需要的插件有</p>
+<ul>
+<li>Git plugin</li>
+<li>Gradle Plugin</li>
+<li>Email Extension Plugin</li>
+<li>description setter plugin</li>
+<li>build-name-setter</li>
+<li>user build vars plugin</li>
+<li>Post-Build Script Plug-in</li>
+<li>Branch API Plugin</li>
+<li>SSH plugin</li>
+<li>Scriptler</li>
+<li>Git Parameter Plug-In</li>
+<li>Gitlab plugin</li>
+</ul>
+<p>如果插件安装过程中由于依赖关系造成安装失败，可以根据错误信息先安装依赖的插件再重新安装需要的插件。</p>
+<p>插件安装完成之后按照提示创建一个管理员账号即可使用，登录之后进行首页面。</p>
+<p><img src="/images/jenkins_main.png" alt="Jenkins首页"></p>
+<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><p>需要配置的环境变量有Android Home、JDK目录、Gradle目录。首先点击<em>系统管理</em>=&gt;<em>系统设置</em>，选中<code>Environment variables</code>，然后新增Android Home环境变量</p>
+<p><img src="/images/jenkins_android_home.png" alt="Android Home配置"></p>
+<p>然后在<em>系统管理</em>=&gt;<em>Global Tool Configuration</em>中配置JDK目录和Gradle目录</p>
+<p><img src="/images/jenkins_gradle.png" alt="Gradle配置"></p>
+<p>JDK和Gradle建议提前下载好放到服务器上，不要使用自动安装，Jenkins自动下载安装非常慢</p>
+<h2 id="配置打包脚本"><a href="#配置打包脚本" class="headerlink" title="配置打包脚本"></a>配置打包脚本</h2><p>Jenkins配置完成之后需要我们来完善我们的gradle脚本让它能够满足我们的打包要求，既能支持在Jenkins中打包，也能支持我们使用Android Studio进行打包。首先我们需要一个变量<code>IS_JENKINS</code>用来标识当前是在Jenkins中打包还是在Android Studio中打包，在不同环境下打包时证书的路径和APK生成的路径不同，我们定义一个函数来获取证书路径，然后在gradle中指定打包时使用的证书<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line">def getMyStoreFile()&#123;</div><div class="line">    if(&quot;true&quot;.equals(IS_JENKINS))&#123;</div><div class="line">        return file(&quot;使用Jenkins打包时的证书路径&quot;)</div><div class="line">    &#125;else&#123;</div><div class="line">        return file(&quot;使用Android Studio打包时证书路径&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">android&#123;</div><div class="line">  signingConfigs &#123;</div><div class="line">        release &#123;</div><div class="line">            keyAlias &apos;*****&apos;</div><div class="line">            keyPassword &apos;****&apos;</div><div class="line">            storeFile getMyStoreFile()</div><div class="line">            storePassword &apos;****&apos;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    buildTypes&#123;</div><div class="line">      debug&#123;</div><div class="line">        ....</div><div class="line">        signingConfig signingConfigs.release</div><div class="line">      &#125;</div><div class="line">      release&#123;</div><div class="line">        ....</div><div class="line">        signingConfig signingConfigs.release</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">    ....</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>然后配置不同打包环境下apk的生成路径<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">android.applicationVariants.all &#123; variant -&gt;</div><div class="line">     variant.outputs.each &#123; output -&gt;</div><div class="line">         //新名字</div><div class="line">         def newName</div><div class="line">         //输出文件夹</div><div class="line">         def outDirectory</div><div class="line">         //是否为Jenkins打包，输出路径不同</div><div class="line">         if (&quot;true&quot;.equals(IS_JENKINS)) &#123;</div><div class="line">             //BUILD_PATH为服务器输出路径</div><div class="line">             outDirectory = BUILD_PATH</div><div class="line">             newName = &quot;你的应用名称&quot; + &quot;-&quot; + defaultConfig.versionName + &quot;-&quot; + BUILD_TYPE + &quot;.apk&quot;</div><div class="line">         &#125; else &#123;</div><div class="line">             outDirectory = output.outputFile.getParent()</div><div class="line">             newName = &quot;你的应用名称&quot; + &quot;-&quot; + defaultConfig.versionName + &quot;-&quot; + BUILD_TYPE + &quot;.apk&quot;</div><div class="line">         &#125;</div><div class="line">         output.outputFile = new File(outDirectory, newName)</div><div class="line">     &#125;</div><div class="line"> &#125;</div></pre></td></tr></table></figure></p>
+<p>最终完成的gradle脚本为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div></pre></td><td class="code"><pre><div class="line">apply plugin: &apos;com.android.application&apos;</div><div class="line">repositories &#123;</div><div class="line">    flatDir &#123;</div><div class="line">        dirs &apos;libs&apos;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">dependencies &#123;</div><div class="line">   ....</div><div class="line">&#125;</div><div class="line">def getMyStoreFile()&#123;</div><div class="line">    if(&quot;true&quot;.equals(IS_JENKINS))&#123;</div><div class="line">        return file(&quot;使用Jenkins打包时的证书路径&quot;)</div><div class="line">    &#125;else&#123;</div><div class="line">        return file(&quot;使用Android Studio打包时证书路径&quot;)</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">android &#123;</div><div class="line">      signingConfigs &#123;</div><div class="line">        release &#123;</div><div class="line">            keyAlias &apos;*****&apos;</div><div class="line">            keyPassword &apos;****&apos;</div><div class="line">            storeFile getMyStoreFile()</div><div class="line">            storePassword &apos;****&apos;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    compileSdkVersion Integer.parseInt(project.ANDROID_BUILD_SDK_VERSION)</div><div class="line">    buildToolsVersion project.ANDROID_BUILD_TOOLS_VERSION</div><div class="line">    dexOptions &#123;</div><div class="line">        jumboMode true</div><div class="line">    &#125;</div><div class="line">    defaultConfig &#123;</div><div class="line">        applicationId project.APPLICATION_ID</div><div class="line">        minSdkVersion Integer.parseInt(project.ANDROID_BUILD_MIN_SDK_VERSION)</div><div class="line">        targetSdkVersion Integer.parseInt(project.ANDROID_BUILD_TARGET_SDK_VERSION)</div><div class="line">        versionName project.APP_VERSION</div><div class="line">        versionCode Integer.parseInt(project.VERSION_CODE)</div><div class="line">        ndk &#123;</div><div class="line">            abiFilters &quot;armeabi&quot;, &quot;armeabi-v7a&quot;, &quot;arm64-v8a&quot;, &quot;mips&quot;, &quot;mips64&quot;, &quot;x86&quot;, &quot;x86_64&quot;</div><div class="line">        &#125;</div><div class="line">        // Enabling multidex support.</div><div class="line">        multiDexEnabled true</div><div class="line">    &#125;</div><div class="line">    buildTypes &#123;</div><div class="line">        debug &#123;</div><div class="line">            minifyEnabled false</div><div class="line">            shrinkResources false</div><div class="line">            signingConfig signingConfigs.release</div><div class="line">            proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;</div><div class="line">        &#125;</div><div class="line">        release &#123;</div><div class="line">            // 移除无用的resource文件</div><div class="line">            shrinkResources true</div><div class="line">            minifyEnabled true</div><div class="line">            signingConfig signingConfigs.release</div><div class="line">            proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    android.applicationVariants.all &#123; variant -&gt;</div><div class="line">        variant.outputs.each &#123; output -&gt;</div><div class="line">            //新名字</div><div class="line">            def newName</div><div class="line">            //输出文件夹</div><div class="line">            def outDirectory</div><div class="line">            //是否为Jenkins打包，输出路径不同</div><div class="line">            if (&quot;true&quot;.equals(IS_JENKINS)) &#123;</div><div class="line">                //BUILD_PATH为服务器输出路径</div><div class="line">                outDirectory = BUILD_PATH</div><div class="line">                newName = &quot;你的app名字&quot; + &quot;-&quot; + defaultConfig.versionName + &quot;-&quot; + BUILD_TYPE + &quot;.apk&quot;</div><div class="line">            &#125; else &#123;</div><div class="line">                outDirectory = output.outputFile.getParent()</div><div class="line">                newName = &quot;你的app名字&quot; + &quot;-&quot; + defaultConfig.versionName + &quot;-&quot; + BUILD_TYPE + &quot;.apk&quot;</div><div class="line">            &#125;</div><div class="line">            output.outputFile = new File(outDirectory, newName)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    flavorDimensions(&quot;channel&quot;)</div><div class="line">    productFlavors &#123;</div><div class="line">        yingyongbao &#123; dimension &quot;channel&quot; &#125;</div><div class="line">    &#125;</div><div class="line">    productFlavors.all &#123;</div><div class="line">        flavor -&gt; flavor.manifestPlaceholders = [CHANNEL_VALUE: name]</div><div class="line">    &#125;</div><div class="line">    packagingOptions &#123;</div><div class="line">        exclude &apos;META-INF/DEPENDENCIES.txt&apos;</div><div class="line">        exclude &apos;META-INF/LICENSE.txt&apos;</div><div class="line">        exclude &apos;META-INF/NOTICE.txt&apos;</div><div class="line">        exclude &apos;META-INF/NOTICE&apos;</div><div class="line">        exclude &apos;META-INF/LICENSE&apos;</div><div class="line">        exclude &apos;META-INF/DEPENDENCIES&apos;</div><div class="line">        exclude &apos;META-INF/notice.txt&apos;</div><div class="line">        exclude &apos;META-INF/license.txt&apos;</div><div class="line">        exclude &apos;META-INF/dependencies.txt&apos;</div><div class="line">        exclude &apos;META-INF/LGPL2.1&apos;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>gradle脚本中使用了在gradle.properties中定义的变量，gradle.properties内容如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">org.gradle.daemon=true</div><div class="line">org.gradle.parallel=true</div><div class="line">manifestmerger.enabled=true</div><div class="line">android.useDeprecatedNdk=true</div><div class="line">org.gradle.configureondemand=true</div><div class="line">org.gradle.jvmargs=-Xmx4096m -XX\:MaxPermSize\=4096m -XX\:+HeapDumpOnOutOfMemoryError -Dfile.encoding\=UTF-8</div><div class="line"></div><div class="line">ANDROID_BUILD_MIN_SDK_VERSION=14</div><div class="line">ANDROID_BUILD_TOOLS_VERSION=25.0.1</div><div class="line">ANDROID_BUILD_TARGET_SDK_VERSION=22</div><div class="line">ANDROID_BUILD_SDK_VERSION=24</div><div class="line">VERSION_CODE=176</div><div class="line">APPLICATION_ID=你的applicationId</div><div class="line"></div><div class="line">#jenkins中用到的变量</div><div class="line">NODEJS_ADDRESS=app要访问的服务器地址</div><div class="line">API_VERSION=api版本号</div><div class="line">APP_VERSION=app版本号</div><div class="line">IS_JENKINS=false</div><div class="line">BUILD_PATH=apk输出路径</div><div class="line">BUILD_TYPE=Debug</div></pre></td></tr></table></figure></p>
+<h2 id="创建Job"><a href="#创建Job" class="headerlink" title="创建Job"></a>创建Job</h2><p>经过上面对gradle的配置我们已经做好了准备工作，现在需要在Jenkins上新建一个任务来完成对上面脚本的调用。</p>
+<p>在Jenkins中点击<em>新建</em>，输入Job名字，由于Jenkins会根据Job名字生成目录所以建议使用英文不要使用中文，然后选择<em>构建一个自由风格的软件项目</em>，然后点击<em>OK</em>进入配置页面</p>
+<p><img src="/images/jenkins_config_job.png" alt="Job配置"></p>
+<p>Job配置一共分为六个部分：General、源码管理、构建触发器、构建、构建后操作。</p>
+<h3 id="General"><a href="#General" class="headerlink" title="General"></a>General</h3><p>General中可以配置Job的基本信息，名字、描述等信息，我们需要关注的是关于构建的配置，如果服务器资源比较紧张可以选择<em>丢弃旧的构建</em>，然后选中<em>参数化构建过程</em>，这样就能够在打包的时候输入一些必要的参数，比如App版本号、打包类型、服务器地址、渠道等信息，这些输入参数会在构建过程中替换掉gradle.properties中定义的变量。Jenkins中支持的参数类型有Boolean、Choice（下拉选择形式的）、String、Git(需要安装插件)。网上其他文章中提到的<code>Dynamic Parameter Plug-in</code>由于安全性问题已经不再支持。下面看一下我们需要添加参数:</p>
+<p><img src="/images/jenkins_param1.png" alt=""></p>
+<p>BUILD_TYPE表示构建版本是Release版还是Debug版，这样可以区分App是正式版本还是内容测试版本。JS_JENKINS表示这是从Jenkins打包的，默认值为true</p>
+<p><img src="/images/jenkins_param2.png" alt=""></p>
+<p>PRODUCT_FLAVORS表示App的渠道，我们目前只设置了应用宝这个一个渠道，如果渠道包多的话这样打包效率比较低，需要一个专门进行多渠道打包的工具。APP_VERSION表示APP的版本号，这里添加这个参数是为了能够让运维人员在App发布时能够指定发布的版本号。</p>
+<p><img src="/images/jenkins_param3.png" alt=""></p>
+<p>GIT_TAG用于在打包时选择使用仓库上哪个分支或者TAG，其中Parameter Type可以选择Tag、Branch、Branch or Tag或者revision，这里我们选择Branch or Tag</p>
+<p><img src="/images/jenkins_param4.png" alt=""></p>
+<p>NODEJS_ADDRESS表示服务器地址，这里可以配置上测试环境、生产环境地址，在打包时选择要哪个后台服务。</p>
+<p><img src="/images/jenkins_param5.png" alt=""></p>
+<p>REMARK用来描述本次打包的版本，比如这次打包使用来验证哪个问题等等，要不然单凭版本号很难想起当时打包这个版本是用来干什么的。</p>
+<h3 id="源码管理"><a href="#源码管理" class="headerlink" title="源码管理"></a>源码管理</h3><p>我们公司使用Gitlab进行代码管理，这里选择git，然后输入仓库地址，并在Branch Specifier绑定GIT_TAG变量，这样GIT_TAG会自动读取仓库上的分支和TAG列表。</p>
+<p><img src="/images/jenkins_scm.png" alt="源码配置"></p>
+<h3 id="构建触发器"><a href="#构建触发器" class="headerlink" title="构建触发器"></a>构建触发器</h3><p>构建触发器用来配置什么时候触发构建，一般做法有手动触发、定时触发、或者提交代码时触发。提交代码触发需要在gitlab中添加webhook，我们这里使用手动触发所以这里不做配置</p>
+<h3 id="构建环境"><a href="#构建环境" class="headerlink" title="构建环境"></a>构建环境</h3><p>通过选中<code>Set Build Name</code>设置构建名称，我们这里设置名称为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">#$&#123;BUILD_NUMBER&#125;_$&#123;BUILD_USER&#125;_$&#123;APP_VERSION&#125;_$&#123;BUILD_TYPE&#125;</div></pre></td></tr></table></figure></p>
+<p>在Jenkins中${}表示引用变量,其中BUILD_NUMBER为构建编号，为Jenkins提供的变量；BUILD_USER为构建人，即当前登录用户，需要选中<code>Set jenkins user build variables</code>；APP_VERSION为App版本号;BUILD_TYPE为构建类型。一个实际的构建名称为<code>#14_admin_1.2_Release</code>,表示第14次构建，构建人为admin,构建的App版本为1.2Release版本</p>
+<p><img src="/images/jenkins_build_env.png" alt=""></p>
+<h3 id="构建"><a href="#构建" class="headerlink" title="构建"></a>构建</h3><p><img src="/images/jenkins_build1.png" alt=""></p>
+<p>选中<code>invoke gradle</code>通过调用gradle脚本进行构建，选择在系统管理中配置的gradle的版本，这里为gradle4.0</p>
+<p>然后在Tasks输入打包命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">clean assemble$&#123;PRODUCT_FLAVORS&#125;$&#123;BUILD_TYPE&#125;</div></pre></td></tr></table></figure></p>
+<p>首先执行clean，然后执行assemble进行打包。以PRODUCT_FLAVORS选择yingyongbao,BUILD_TYPE为Release为例，则实际执行的命令为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">clean assembleYingyongbaoRelease</div></pre></td></tr></table></figure></p>
+<p>然后选中<code>Pass job parameters as Gradle properties</code>这样才能将我们自定义参数在打包时传递到gradle脚本中</p>
+<p>这样我们就能成功打包出apk了</p>
+<h2 id="实现二维码下载"><a href="#实现二维码下载" class="headerlink" title="实现二维码下载"></a>实现二维码下载</h2><p>为了能够更方便的使用，我们还应该提供一个二维码功能，这样手机扫描之后就能下载安装。一般做法有两个：一是选择将打包出来的apk上传到第三方平台；另一个是本地搭建一个服务，实现静态文件服务器的功能。我们这里选择在本地服务器搭建一个静态文件服务，同时将文件地址生成一个二维码展示出来。</p>
+<p><img src="/images/jenkins_build2.png" alt=""></p>
+<p>在Excute Shell中输入在构建完成之后执行的脚本，根据apk路径生成一个二维码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">node /opt/jenkins_node/qr.js http://10.1.170.154:3000/apk/yundiangong-$&#123;APP_VERSION&#125;-$&#123;BUILD_TYPE&#125;.apk /opt/jenkins_node/apk/yundiangong-$&#123;APP_VERSION&#125;-$&#123;BUILD_TYPE&#125;.png</div></pre></td></tr></table></figure></p>
+<p>即通过node 执行/opt/jenkins_node（需要根据自己实际的目录设置）下的qr.js文件，同时传递两个参数，第一个参数文件apk文件访问路径，我在gradle打包脚本中设置apk输出路径为/opt/jenkins_node/apk目录，通过静态文件服务的访问地址<code>http://10.1.170.154:3000/apk/yundiangong-${APP_VERSION}-${BUILD_TYPE}.apk</code>（10.1.170.154为我们公司内部服务器，需要根据自己情况设置）；第二个参数为生成二维码的保存路径，同样为/opt/jenkins_node/apk目录，这样静态文件服务既可以提供apk下载，也可以提供二维码下载。</p>
+<p>然后通过设置build description显示二维码功能,通过定义一个html片段，需要在<em>系统管理</em>=&gt;<em>Configure Global Security</em>中将<code>Markup Formatter</code>选择为<code>Safe HTML</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;img src=&quot;http://10.1.170.154:3000/apk/yundiangong-$&#123;APP_VERSION&#125;-$&#123;BUILD_TYPE&#125;.png&quot; &gt;&lt;br&gt; &lt;a target=&quot;_blank&quot; href=&quot;http://10.1.170.154:3000/apk/yundiangong-$&#123;APP_VERSION&#125;-$&#123;BUILD_TYPE&#125;.apk&quot;&gt;点击下载&lt;/a&gt;&lt;p&gt;$&#123;REMARK&#125;&lt;/p&gt;</div></pre></td></tr></table></figure></p>
+<p>这样构建成功之后会展示一个二维码，同时提供一个点击下载的链接，并且还会展示该构建版本的描述信息</p>
+<p>我们使用nodeJs实现一个静态文件服务，通过nodejs启动一个http服务，然后通过解析请求返回对应的apk文件。代码如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div></pre></td><td class="code"><pre><div class="line">const http = require(&apos;http&apos;)</div><div class="line">const path = require(&apos;path&apos;)</div><div class="line">const url = require(&apos;url&apos;)</div><div class="line">const fs = require(&apos;fs&apos;)</div><div class="line">const mime = require(&apos;mime&apos;)</div><div class="line"></div><div class="line">const port = &apos;3000&apos;</div><div class="line">const server = http.createServer((req, res) =&gt; &#123;</div><div class="line">  if (req.url === &apos;/&apos;) &#123;</div><div class="line">    res.end(&apos;Hello World&apos;)</div><div class="line">    return</div><div class="line">  &#125;</div><div class="line">  if (req.url === &apos;/favicon.ico&apos;) return //不响应favicon请求</div><div class="line"></div><div class="line">  // 获取url-&gt;patnname 即文件名</div><div class="line">  let pathname = path.join(__dirname, url.parse(req.url).pathname)</div><div class="line">  pathname = decodeURIComponent(pathname) // url解码，防止中文路径出错</div><div class="line">  if (fs.existsSync(pathname)) &#123;</div><div class="line">    if (!fs.statSync(pathname).isDirectory()) &#123;</div><div class="line">      // 以binary读取文件</div><div class="line">      fs.readFile(pathname, &apos;binary&apos;, (err, data) =&gt; &#123;</div><div class="line">        if (err) &#123;</div><div class="line">          res.writeHead(500, &#123; &apos;Content-Type&apos;: &apos;text/plain&apos; &#125;)</div><div class="line">          res.end(JSON.stringify(err))</div><div class="line">          return false</div><div class="line">        &#125;</div><div class="line">        res.writeHead(200, &#123;</div><div class="line">          &apos;Content-Type&apos;: `$&#123;mime.lookup(pathname)&#125;;charset:UTF-8`</div><div class="line">        &#125;)</div><div class="line">        res.write(data, &apos;binary&apos;)</div><div class="line">        res.end()</div><div class="line">      &#125;)</div><div class="line">    &#125; else &#123;</div><div class="line">      res.statusCode = 404;</div><div class="line">      res.end(&apos;Directory Not Support&apos;)</div><div class="line">    &#125;</div><div class="line"></div><div class="line">  &#125; else &#123;</div><div class="line">      res.statusCode = 404;</div><div class="line">      res.end(&apos;File Not Found&apos;)</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line">server.listen(port);</div></pre></td></tr></table></figure></p>
+<p>生成二维码的小程序也是使用nodejs实现，通过使用qr-image模块实现生成二维码功能<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">const qr=require(&apos;qr-image&apos;)</div><div class="line">const  args = process.argv.splice(2);</div><div class="line">const filePath=args[0]//源文件地址</div><div class="line">const distPath=args[1]//目标文件地址</div><div class="line">const img=qr.image(filePath,&#123;size:5&#125;)//生成二维码图片</div><div class="line">img.pipe(require(&apos;fs&apos;).createWriteStream(distPath));//保存图片</div></pre></td></tr></table></figure></p>
+<p>代码完整地址为：<a href="https://github.com/dumingxin/jenkinsNode.git" target="_blank" rel="external">https://github.com/dumingxin/jenkinsNode.git</a>,首先需要安装nodejs，然后在代码目录执行<code>npm install</code>,执行<code>node web.js</code>启动静态文件服务即可。如果想后台运行可以使用pm2启动web.js</p>
+<p>最后打包成功之后的效果</p>
+<p><img src="/images/jenkins_final.png" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Jenkins/" rel="tag"># Jenkins</a>
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/06/使用说明/" rel="prev" title="使用说明">
+                使用说明 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8yOTMyMi81ODkw"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="PowerCloud" />
+          <p class="site-author-name" itemprop="name">PowerCloud</p>
+           
+              <p class="site-description motion-element" itemprop="description">PowerCloud</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jenkins安装"><span class="nav-number">1.</span> <span class="nav-text">Jenkins安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置环境变量"><span class="nav-number">2.</span> <span class="nav-text">配置环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置打包脚本"><span class="nav-number">3.</span> <span class="nav-text">配置打包脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建Job"><span class="nav-number">4.</span> <span class="nav-text">创建Job</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#General"><span class="nav-number">4.1.</span> <span class="nav-text">General</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#源码管理"><span class="nav-number">4.2.</span> <span class="nav-text">源码管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建触发器"><span class="nav-number">4.3.</span> <span class="nav-text">构建触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建环境"><span class="nav-number">4.4.</span> <span class="nav-text">构建环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#构建"><span class="nav-number">4.5.</span> <span class="nav-text">构建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现二维码下载"><span class="nav-number">5.</span> <span class="nav-text">实现二维码下载</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PowerCloud</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Gemini
+  </a>
+</div>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      本站访客数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人次
+    </span>
+  
+
+  
+    <span class="site-pv">
+      本站总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
